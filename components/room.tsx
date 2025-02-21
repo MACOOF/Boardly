@@ -19,8 +19,10 @@ export function Room({
    fallback
   }: RoomProps) {
   return (
-    <LiveblocksProvider authEndpoint="/api/liveblocks-auth">
-      <RoomProvider id={roomId} initialPresence={{}}>
+    <LiveblocksProvider authEndpoint="/api/liveblocks-auth" throttle={20}>
+      <RoomProvider id={roomId} initialPresence={{
+        cursor:null,
+      }}>
         <ClientSideSuspense fallback={fallback}>
           {children}
         </ClientSideSuspense>
