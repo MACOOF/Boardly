@@ -3,6 +3,7 @@
 import { useSelectionBounds } from "@/hooks/use-selection-bounds";
 import { LayerType, Side, XYWH } from "@/types/canvas";
 import { useSelf, useStorage } from "@liveblocks/react/suspense";
+import { on } from "process";
 import {memo} from "react";
 
 interface SelectionBoxProps {
@@ -56,7 +57,7 @@ export const SelectionBox = memo(({ onResizeHandlePointerDown }: SelectionBoxPro
             }}
             onPointerDown={(e) => {
               e.stopPropagation();
-
+              onResizeHandlePointerDown(Side.Top + Side.Left,bounds);
             }}
           />
           <rect
@@ -71,7 +72,7 @@ export const SelectionBox = memo(({ onResizeHandlePointerDown }: SelectionBoxPro
             }}
             onPointerDown={(e) => {
               e.stopPropagation();
-              
+              onResizeHandlePointerDown(Side.Top,bounds);
             }}
           />
           <rect
@@ -86,7 +87,7 @@ export const SelectionBox = memo(({ onResizeHandlePointerDown }: SelectionBoxPro
             }}
             onPointerDown={(e) => {
               e.stopPropagation();
-              
+              onResizeHandlePointerDown(Side.Right + Side.Bottom,bounds);
             }}
           />
           <rect
@@ -101,7 +102,7 @@ export const SelectionBox = memo(({ onResizeHandlePointerDown }: SelectionBoxPro
             }}
             onPointerDown={(e) => {
               e.stopPropagation();
-              
+              onResizeHandlePointerDown(Side.Top + Side.Right,bounds);
             }}
           />
 
@@ -117,7 +118,7 @@ export const SelectionBox = memo(({ onResizeHandlePointerDown }: SelectionBoxPro
             }}
             onPointerDown={(e) => {
               e.stopPropagation();
-              
+              onResizeHandlePointerDown(Side.Right,bounds);
             }}
           />
           
@@ -135,7 +136,7 @@ export const SelectionBox = memo(({ onResizeHandlePointerDown }: SelectionBoxPro
             }}
             onPointerDown={(e) => {
               e.stopPropagation();
-              
+              onResizeHandlePointerDown(Side.Right + Side.Bottom,bounds);
             }}
           />
 
@@ -153,7 +154,7 @@ export const SelectionBox = memo(({ onResizeHandlePointerDown }: SelectionBoxPro
             }}
             onPointerDown={(e) => {
               e.stopPropagation();
-              
+              onResizeHandlePointerDown(Side.Bottom,bounds);
             }}
           />
 
@@ -171,7 +172,7 @@ export const SelectionBox = memo(({ onResizeHandlePointerDown }: SelectionBoxPro
             }}
             onPointerDown={(e) => {
               e.stopPropagation();
-              
+              onResizeHandlePointerDown(Side.Left + Side.Bottom,bounds);
             }}
           />
 
@@ -189,7 +190,7 @@ export const SelectionBox = memo(({ onResizeHandlePointerDown }: SelectionBoxPro
             }}
             onPointerDown={(e) => {
               e.stopPropagation();
-              
+              onResizeHandlePointerDown(Side.Left,bounds);
             }}
           />
 
