@@ -166,7 +166,7 @@ export const SelectionBox = memo(({ onResizeHandlePointerDown }: SelectionBoxPro
               transform:`translate(
                 ${bounds.x - HANDLE_WIDTH/2}px,
                 ${bounds.y - HANDLE_WIDTH/2 + bounds.height}px)`,
-              cursor:"nwse-resize",
+              cursor:"nesw-resize",
               width:`${HANDLE_WIDTH}px`,
               height:`${HANDLE_WIDTH}px`
             }}
@@ -184,7 +184,7 @@ export const SelectionBox = memo(({ onResizeHandlePointerDown }: SelectionBoxPro
               transform:`translate(
                 ${bounds.x - HANDLE_WIDTH/2}px,
                 ${bounds.y - HANDLE_WIDTH/2 + bounds.height/2}px)`,
-              cursor:"nwse-resize",
+              cursor:"ew-resize",
               width:`${HANDLE_WIDTH}px`,
               height:`${HANDLE_WIDTH}px`
             }}

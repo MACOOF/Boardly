@@ -73,6 +73,43 @@ export const Canvas = ({
 
   },[lastUsedColor]);
 
+  const translateSelectedLayer = useMutation((
+    {storage,self},
+    point:Point
+  )=>{
+    if(canvasState.mode !== CanvasMode.Translating){
+      return ;
+    }
+    const offset={
+      x:point.x - canvasState.current.x,
+      y:point.y - canvasState.current.y
+    }
+
+    const liveLayers = storage.get("layers");
+    
+    for(const id of self.presence.selection){
+      const layer = liveLayers.get(id);
+      if(layer){
+        layer.update({
+          x:layer.get("x") + offset.x,
+          y:layer.get("y") + offset.y
+        });
+      }
+    }
+
+    setCanvasState({mode:CanvasMode.Translating,current:point});
+  },[canvasState]);
+
+  const unSelectLayer = useMutation((
+    {setMyPresence,self}
+  )=>{
+
+    if(self.presence.selection.length>0){
+      setMyPresence({selection:[]},{addToHistory:true});
+    }
+
+  },[]);
+
   const resizeSelectedLayer = useMutation((
     {storage,self},
     point:Point,
@@ -106,7 +143,11 @@ export const Canvas = ({
     const current = pointerEventToCanvasPoint(e,camera);
 
     // console.log({current});
-    if(canvasState.mode === CanvasMode.Resizing){
+    if(canvasState.mode === CanvasMode.Translating){
+      console.log("Translating"); 
+      translateSelectedLayer(current);
+    }else if(canvasState.mode === CanvasMode.Resizing){
+      //console.log("Resizing");
       resizeSelectedLayer(current);
     }
     setMyPresence({cursor:current});
@@ -118,6 +159,21 @@ export const Canvas = ({
     setMyPresence({cursor:null})
   },[]);
 
+  const onPointerDown = useCallback((e:React.PointerEvent)=>{
+    e.preventDefault();
+    const current = pointerEventToCanvasPoint(e,camera);
+
+    if(canvasState.mode === CanvasMode.Inserting){
+      return;
+    }
+
+    setCanvasState({
+      mode:CanvasMode.Pressing,
+      origin:current
+    });
+
+  },[camera,canvasState.mode,setCanvasState]);
+
   const onPointerUp = useMutation((
     {},
     e
@@ -125,7 +181,15 @@ export const Canvas = ({
     const points = pointerEventToCanvasPoint(e,camera);
 
     console.log({points,mode:canvasState.mode});
-    if(canvasState.mode === CanvasMode.Inserting && canvasState.layerType !== LayerType.Note){
+    if(
+      canvasState.mode === CanvasMode.None ||
+      canvasState.mode === CanvasMode.Pressing 
+    ){
+      unSelectLayer();
+      setCanvasState({
+        mode:CanvasMode.None,
+      });
+    }else if(canvasState.mode === CanvasMode.Inserting && canvasState.layerType !== LayerType.Note){
       insertLayer(canvasState.layerType, points);
     }else{
       setCanvasState({
@@ -202,6 +266,7 @@ export const Canvas = ({
         onPointerMove={onPointerMove}
         onPointerLeave={onPointerLeave}
         onPointerUp={onPointerUp}
+        onPointerDown={onPointerDown}
       >
         <g 
           style={{
