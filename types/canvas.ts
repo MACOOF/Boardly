@@ -46,7 +46,7 @@ export type PathLayer = {
   width:number,
   height:number,
   fill:Color,
-  points:number[][],
+  points?:number[][],
   value?:string,
 };
 
@@ -132,3 +132,5 @@ export enum CanvasMode{
   Resizing,
   Pencil,
 };
+
+export type Layer = ReactangleLayer | EllipseLayer | PathLayer | TextLayer | NoteLayer;
