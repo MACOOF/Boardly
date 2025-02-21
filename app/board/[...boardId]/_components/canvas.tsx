@@ -12,6 +12,7 @@ import { nanoid } from "nanoid";
 import { LiveObject } from "@liveblocks/client";
 import { LayerPreview } from "./layer-preview";
 import { set } from "date-fns";
+import { SelectionBox } from "./selection-box";
 // import { headers } from "next/headers";
 
 const MAX_LAYERS = 100;
@@ -181,10 +182,13 @@ export const Canvas = ({
             <LayerPreview 
               key={layerId}
               id={layerId}
-              onLayerPointerDown={()=>{}}
+              onLayerPointerDown={onLayerPointerDown}
               selectionColor={layerIdsToColorSelection[layerId]}
             />
           ))}
+          <SelectionBox
+            onResizeHandlePointerDown={()=>{}}
+          />
           <CursorPresence />
         </g>
       </svg>
