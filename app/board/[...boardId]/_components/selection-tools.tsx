@@ -7,7 +7,7 @@ import { memo } from "react";
 import { ColorPicker } from "./color-picker";
 import { useDeleteLayers } from "@/hooks/use-delete-layers";
 import { Hint } from "@/components/hint";
-import { Trash2 } from "lucide-react";
+import { BringToFront, SendToBack, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 interface SelectionToolsProps {
@@ -15,59 +15,112 @@ interface SelectionToolsProps {
   setLastUsedColor:(color:Color)=>void,
 }
 
-export const SelectionTools = memo(({camera, setLastUsedColor}:SelectionToolsProps) => {
-  const selection = useSelf((me)=>me.presence.selection);
+export const SelectionTools = memo(({ camera, setLastUsedColor }: SelectionToolsProps) => {
+  const selection = useSelf((me) => me.presence.selection);
 
-  const setFill = useMutation((
-    {storage},
-    fill:Color,
+  const moveToBack = useMutation((
+    {storage}
   )=>{
-    const liveLayers = storage.get("layers");
+    const liveLayersIds = storage.get("layerIds");
 
-    setLastUsedColor(fill);
+    const indices:number[]=[];
 
-    selection.forEach((layerId)=>{
-      liveLayers.get(layerId)?.set("fill",fill);
-    })    
-  },[selection,setLastUsedColor]);
+    const arr = liveLayersIds.toArray();
+
+    for(let i=0;i<arr.length;i++){
+      if(selection.includes(arr[i])){
+        indices.push(i);
+      }
+    }
+
+    for(let i=0;i<indices.length;i++){
+      liveLayersIds.move(indices[i],i);
+    }
+
+  },[selection]);
+
+  const moveToFront = useMutation((
+    {storage}
+  )=>{
+    const liveLayersIds = storage.get("layerIds");
+
+    const indices:number[]=[];
+
+    const arr = liveLayersIds.toArray();
+
+    for(let i=0;i<arr.length;i++){
+      if(selection.includes(arr[i])){
+        indices.push(i);
+      }
+    }
+
+    for(let I=indices.length-1;I>=0;I--){
+      liveLayersIds.move(indices[I],I);
+    }
+
+  },[selection])
+
+  const setFill = useMutation(
+    ({ storage }, fill: Color) => {
+      const liveLayers = storage.get("layers");
+
+      setLastUsedColor(fill);
+
+      selection.forEach((layerId) => {
+        liveLayers.get(layerId)?.set("fill", fill);
+      });
+    },
+    [selection, setLastUsedColor]
+  );
 
   const deleteLayers = useDeleteLayers();
 
   const selectionBounds = useSelectionBounds();
 
-  if(!selectionBounds)
-    return null;
+  if (!selectionBounds) return null;
 
-  const x = selectionBounds.width/2 + selectionBounds.x+camera.x;
-  const y = selectionBounds.y  + camera.y;
+  const x = selectionBounds.width / 2 + selectionBounds.x + camera.x;
+  const y = selectionBounds.y + camera.y;
+
+  console.log('x:', x, 'y:', y); // Check if x and y are correct values
 
   return (
     <div
-      className="absolute p-3 rounded-xl bg-white shadow-sm border flex
-      select-none"
-
+      className="absolute p-3 rounded-xl bg-white shadow-sm border flex select-none"
       style={{
-        transform:`translateX(calc(${x}px-50%)) translateY(calc(${y - 16}px-100%))`,
+        transform: `translateX(calc(${x}px - 50%)) translateY(calc(${y - 16}px - 100%))`,
       }}
     >
-      <ColorPicker
-        onChange={setFill}
-      />
-      <div
-        className="flex items-center pl-2 ml-2 border-l border-neutral-200"
-      >
-        <Hint lable="Delete">
+      <ColorPicker onChange={setFill} />
+      <div className="flex flex-col gap-y-0.5">
+        <Hint lable={"Bring to front"}>
           <Button
             variant={"board"}
-            size="icon"
-            onClick={deleteLayers}
+            size={"icon"}
+            onClick={moveToFront}
           >
-            <Trash2/>
+            <BringToFront/>
+          </Button>
+        </Hint>
+        <Hint lable={"Send to back"} side="bottom">
+          <Button
+            variant={"board"}
+            size={"icon"}
+            onClick={moveToBack}
+          >
+            <SendToBack/>
+          </Button>
+        </Hint>
+      </div>
+      <div className="flex items-center pl-2 ml-2 border-l border-neutral-200">
+        <Hint lable="Delete">
+          <Button variant={"board"} size="icon" onClick={deleteLayers}>
+            <Trash2 />
           </Button>
         </Hint>
       </div>
     </div>
-  )
+  );
 });
 
-  SelectionTools.displayName = "SelectionTools";
+SelectionTools.displayName = "SelectionTools";
