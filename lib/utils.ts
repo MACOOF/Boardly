@@ -1,4 +1,4 @@
-import { Camera, Color, Point, Side, XYWH } from "@/types/canvas";
+import { Camera, Color, Layer, Point, Side, XYWH } from "@/types/canvas";
 import { clsx, type ClassValue } from "clsx"
 import React from "react";
 import { twMerge } from "tailwind-merge"
@@ -68,4 +68,41 @@ export function resizeBounds(bounds:XYWH,corner:Side,point:Point):XYWH {
 
 
   return result;
+}
+
+export function findIntersectingLayerWithRectangle(
+  layerIds:readonly string[],
+  layers:ReadonlyMap<string,Layer>,
+  a:Point,
+  b:Point
+){
+  const rect = {
+    x:Math.min(a.x,b.x),
+    y:Math.min(a.y,b.y),
+    width:Math.abs(a.x-b.x),
+    height:Math.abs(a.y-b.y)
+  };
+
+  const ids=[];
+
+  for(const layerId of layerIds){
+    const layer = layers.get(layerId);
+
+    if(!layer){
+      continue;
+    }
+
+    const {x,y,height,width}=layer;
+
+    if(
+      rect.x < x + width &&
+      rect.x + rect.width > x &&
+      rect.y < y + height &&
+      rect.y + rect.height > y
+    ){
+      ids.push(layerId);
+    }
+  }
+
+  return ids;
 }

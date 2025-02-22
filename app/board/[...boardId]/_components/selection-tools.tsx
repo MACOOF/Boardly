@@ -39,26 +39,26 @@ export const SelectionTools = memo(({ camera, setLastUsedColor }: SelectionTools
 
   },[selection]);
 
-  const moveToFront = useMutation((
-    {storage}
-  )=>{
+  const moveToFront = useMutation(({ storage }) => {
     const liveLayersIds = storage.get("layerIds");
-
-    const indices:number[]=[];
-
+  
+    const indices: number[] = [];
     const arr = liveLayersIds.toArray();
-
-    for(let i=0;i<arr.length;i++){
-      if(selection.includes(arr[i])){
+  
+    for (let i = 0; i < arr.length; i++) {
+      if (selection.includes(arr[i])) {
         indices.push(i);
       }
     }
-
-    for(let I=indices.length-1;I>=0;I--){
-      liveLayersIds.move(indices[I],I);
-    }
-
-  },[selection])
+  
+    // Move each selected item to its correct position near the end
+    const totalLayers = arr.length;
+    indices.forEach((index, i) => {
+      liveLayersIds.move(index, totalLayers - indices.length + i);
+    });
+  
+  }, [selection]);
+  
 
   const setFill = useMutation(
     ({ storage }, fill: Color) => {
