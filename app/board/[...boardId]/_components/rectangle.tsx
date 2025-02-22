@@ -14,7 +14,7 @@ export const Rectangle = ({
   onLayerPointerDown,
   selectionColor
 }:ReactangleProps) => {
-  console.log({id,layer},"REACTANGLE");
+  //console.log({id,layer},"REACTANGLE");
   const {x,y,width,height,fill}=layer;
 
   return(

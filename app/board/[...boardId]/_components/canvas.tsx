@@ -44,7 +44,7 @@ export const Canvas = ({
 
   const insertLayer = useMutation((
     {storage,setMyPresence},
-    layerType:LayerType.Ellipse | LayerType.Reactangle | LayerType.Text | LayerType.Path,
+    layerType:LayerType.Ellipse | LayerType.Reactangle | LayerType.Text | LayerType.Path |LayerType.Note,
     position: Point
   )=>{
     const liveLayers = storage.get("layers");
@@ -236,7 +236,7 @@ export const Canvas = ({
       setCanvasState({
         mode:CanvasMode.None,
       });
-    }else if(canvasState.mode === CanvasMode.Inserting && canvasState.layerType !== LayerType.Note){
+    }else if(canvasState.mode === CanvasMode.Inserting ){
       insertLayer(canvasState.layerType, points);
     }else{
       setCanvasState({

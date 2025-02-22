@@ -106,3 +106,8 @@ export function findIntersectingLayerWithRectangle(
 
   return ids;
 }
+
+export function getContrastingTextColor(color:Color){
+  const yiq = ((color.r * 299) + (color.g * 587) + (color.b * 114)) / 1000;
+  return yiq >= 128 ? "#000000" : "#FFFFFF";
+}
