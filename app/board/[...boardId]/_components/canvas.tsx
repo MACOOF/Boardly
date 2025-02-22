@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useCallback, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { Info } from "./info";
 import { Participants } from "./participants";
 import { Toolbar } from "./toolbar";
@@ -16,6 +16,8 @@ import { SelectionBox } from "./selection-box";
 import { SelectionTools } from "./selection-tools";
 import { useSelf } from "@liveblocks/react";
 import { Path } from "./Path";
+import { useDisableSchrollBounce } from "@/hooks/use-sisable-scroll-bounce";
+import { useDeleteLayers } from "@/hooks/use-delete-layers";
 // import { headers } from "next/headers";
 
 const MAX_LAYERS = 100;
@@ -42,9 +44,46 @@ export const Canvas = ({
     b:0
   });
 
+  
+  useDisableSchrollBounce();
   const canUndo = useCanUndo();
   const canRedo = useCanRedo();
   const history = useHistory();
+  const deleteLayers = useDeleteLayers();
+  
+  useEffect(()=>{
+    function inKeyDown(e:KeyboardEvent){
+      switch(e.key){
+        case "z":{
+          if(e.ctrlKey || e.metaKey){
+            if(e.shiftKey){
+              history.redo();
+            }else{
+              history.undo();
+            }
+            break;
+          }
+        }
+        case "y":{
+          if(e.ctrlKey || e.metaKey){
+              history.redo();
+            break;
+          }
+        }
+        case "Delete":{  
+          deleteLayers();
+          break;
+        }
+      }
+    }
+
+    document.addEventListener("keydown",inKeyDown);
+
+    return ()=>{
+      document.removeEventListener("keydown",inKeyDown);
+    }
+  },[deleteLayers,history]);
+
 
   const insertLayer = useMutation((
     {storage,setMyPresence},
@@ -162,6 +201,7 @@ export const Canvas = ({
   )=>{
     const liveLayers = storage.get("layers");
     const { pencilDraft } = self.presence;
+    console.log({pencilDraft},"PENCILE-DRAFT INSERTPATH");
 
     if(
       pencilDraft==null ||
@@ -187,15 +227,16 @@ export const Canvas = ({
       pencilDraft:null
     });
 
-    setCanvasState({mode:CanvasMode.Pencil})
-  },[lastUsedColor]);
+    setCanvasState({mode:CanvasMode.Pencil});
+    console.log('Finished inserting path');
+  },[lastUsedColor,setCanvasState]);
 
   const startDrawing = useMutation((
     {setMyPresence},
     point:Point,
     Pressure:number,
   )=>{
-
+    console.log("STARTED DRAWING");
     setMyPresence({
       pencilDraft:[[point.x,point.y,Pressure]],
       penColor:lastUsedColor,
@@ -210,13 +251,15 @@ export const Canvas = ({
   )=>{
     const { pencilDraft } = self.presence;
 
+    console.log(pencilDraft)
     if(
       canvasState.mode !== CanvasMode.Pencil ||
-      e.button !== 1 ||
+      e.button === 1 ||
       pencilDraft == null
     ) {
       return;
     }
+    console.log({pencilDraft},"PENCIL-DRAFT-ContinueDrawing");
 
     setMyPresence({
       cursor:point,
@@ -273,6 +316,7 @@ export const Canvas = ({
       //console.log("Resizing");
       resizeSelectedLayer(current);
     }else if(canvasState.mode === CanvasMode.Pencil){
+      //console.log("Pencil");
       continueDrawing(current,e);
     }
     setMyPresence({cursor:current});

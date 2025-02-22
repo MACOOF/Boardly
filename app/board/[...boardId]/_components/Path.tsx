@@ -1,5 +1,4 @@
 import { getSvgPathFromStroke } from "@/lib/utils";
-import { PathLayer } from "@/types/canvas"
 import getStroke from "perfect-freehand";
 
 interface pathPops{
@@ -19,6 +18,20 @@ export const Path=({
   onPointerDown,
   stroke
 }:pathPops)=>{
+  console.log("Layer Points:", points);
+console.log("Layer X, Y:", x, y);
+console.log("Layer Fill:", fill);
+const strokeData = points ? getStroke(points, {
+  size: 16,
+  thinning: 0.5,
+  smoothing: 0.5,
+  streamline: 0.5,
+}) : [];
+
+console.log("Processed Stroke for Layer:", strokeData);
+console.log("SVG Path for Layer:", getSvgPathFromStroke(strokeData));
+
+
   return (
     <path
       className="drop-shadow-md"
@@ -28,15 +41,17 @@ export const Path=({
         thinning:0.5,
         smoothing:0.5,
         streamline:0.5,
-      }))}
+        })
+      )}
       style={{
         transform:`translate(${x}px,${y}px)`
       }}
       x={0}
       y={0}
-      fill={fill}
-      stroke={stroke}
+      fill={fill||"black"}
+      stroke={stroke||"black"}
       strokeWidth={1}
     />
+
   )
 }

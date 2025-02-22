@@ -33,11 +33,10 @@ export const LayerPreview = memo(({
           key={id}
           points={layer.points!}
           onPointerDown={(e)=>onLayerPointerDown(e,id)}
-          stroke={selectionColor}
           x={layer.x}
           y={layer.y}
           fill={layer.fill?colotToCss(layer.fill):"#000"}
-
+          stroke={selectionColor}
         />
       )
     case LayerType.Note:
