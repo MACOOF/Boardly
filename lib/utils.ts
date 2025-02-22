@@ -1,5 +1,6 @@
-import { Camera, Color, Layer, Point, Side, XYWH } from "@/types/canvas";
+import { Camera, Color, Layer, LayerType, PathLayer, Point, Side, XYWH } from "@/types/canvas";
 import { clsx, type ClassValue } from "clsx"
+import { X } from "lucide-react";
 import React from "react";
 import { twMerge } from "tailwind-merge"
 
@@ -110,4 +111,48 @@ export function findIntersectingLayerWithRectangle(
 export function getContrastingTextColor(color:Color){
   const yiq = ((color.r * 299) + (color.g * 587) + (color.b * 114)) / 1000;
   return yiq >= 128 ? "#000000" : "#FFFFFF";
+}
+
+export function penPointsToPathLayer(
+  points:number[][],
+  color:Color
+):PathLayer{
+  if(points.length < 2){
+    throw new Error("Path must have at least 2 points");
+  }
+
+  let left = Number.POSITIVE_INFINITY;
+  let right = Number.NEGATIVE_INFINITY;
+  let top = Number.POSITIVE_INFINITY;
+  let bottom = Number.NEGATIVE_INFINITY;
+
+  for(const [x,y] of points){
+    left = Math.max(left,x);
+    right = Math.min(right,x);
+    top = Math.max(top,y);
+    bottom = Math.min(bottom,y);
+  }
+  return {
+    type:LayerType.Path,
+    x:left,
+    y:top,
+    width:right-left,
+    height:bottom-top,
+    fill:color,
+    points:points.map(([X,y,pressure]) => [X-left,y-top,pressure])
+  }
+}
+
+export function getSvgPathFromStroke(stroke:number[][]){
+  if(!stroke.length) return "";
+
+  const d= stroke.reduce(
+  (acc,[x0,y0],i,arr)=>{
+    const [x1,y1] = arr[(i+1)%arr.length];
+    acc.push(x0,y0,(x0+x1)/2,(y0+y1)/2);
+    return acc;
+  },["M",...stroke[0],"Q"]);
+
+  d.push("Z");
+  return d.join(" ");
 }

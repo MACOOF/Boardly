@@ -1,9 +1,11 @@
 "use client";
 
-import { useOthersConnectionIds } from "@liveblocks/react/suspense";
+import { shallow, useOthersConnectionIds, useOthersMapped } from "@liveblocks/react/suspense";
 import { connect } from "http2";
 import { memo } from "react";
 import { Cursor } from "./cursor";
+import { Path } from "./Path";
+import { colotToCss } from "@/lib/utils";
 const Cursors = () => {
   const ids = useOthersConnectionIds();
   return (
@@ -18,9 +20,36 @@ const Cursors = () => {
   )
 }
 
+const Drafts = () => {
+  const others = useOthersMapped((other)=>({
+    pencilDraft:other.presence.pencilDraft,
+    penColor:other.presence.penColor,
+  }),shallow);
+  
+  return (
+    <>
+      {others.map(([Key,other])=>{
+        if(other.pencilDraft){
+          return (
+            <Path
+              x={0}
+              y={0}
+              points={other.pencilDraft}
+              fill={other.penColor?colotToCss(other.penColor):"#000"}
+
+            />
+          )
+        }
+        return null;
+      })}
+    </>
+  )
+}
+
 export const CursorPresence = memo(() => {
   return (
     <>
+      <Drafts/>
       <Cursors/>
     </>
   )

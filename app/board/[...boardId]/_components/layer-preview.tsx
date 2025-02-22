@@ -7,6 +7,8 @@ import { Rectangle } from "./rectangle";
 import { Ellipse } from "./ellipse";
 import { Text } from "./text";
 import { Note } from "./note";
+import { Path } from "./Path";
+import { colotToCss } from "@/lib/utils";
 interface LayerPreviewProps {
   id:string;
   onLayerPointerDown:(e:React.PointerEvent,layerId:string)=> void;
@@ -25,6 +27,19 @@ export const LayerPreview = memo(({
   console.log({layer},"LayerPreview");
   
   switch(layer.type){
+    case LayerType.Path:
+      return (
+        <Path
+          key={id}
+          points={layer.points!}
+          onPointerDown={(e)=>onLayerPointerDown(e,id)}
+          stroke={selectionColor}
+          x={layer.x}
+          y={layer.y}
+          fill={layer.fill?colotToCss(layer.fill):"#000"}
+
+        />
+      )
     case LayerType.Note:
       return (
         <Note 
@@ -62,7 +77,7 @@ export const LayerPreview = memo(({
           />
       );
     default:
-      console.warn("Unknown layer type",layer.type);
+      console.warn("Unknown layer type",layer);
       return null;
   }
 });
