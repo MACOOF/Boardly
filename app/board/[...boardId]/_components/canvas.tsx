@@ -13,6 +13,7 @@ import { LiveObject } from "@liveblocks/client";
 import { LayerPreview } from "./layer-preview";
 import { set } from "date-fns";
 import { SelectionBox } from "./selection-box";
+import { SelectionTools } from "./selection-tools";
 // import { headers } from "next/headers";
 
 const MAX_LAYERS = 100;
@@ -259,6 +260,10 @@ export const Canvas = ({
         redo={history.redo}
         canUndo={canUndo}
         canRedo={canRedo}
+      />
+      <SelectionTools 
+        camera={camera}
+        setLastUsedColor={setLastUsedColor}
       />
       <svg
         className="h-[100vh] w-[100vw] "
