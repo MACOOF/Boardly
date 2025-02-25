@@ -64,12 +64,12 @@ export const Canvas = ({
             break;
           }
         }
-        case "y":{
-          if(e.ctrlKey || e.metaKey){
-              history.redo();
-            break;
-          }
-        }
+        // case "y":{
+        //   if(e.ctrlKey || e.metaKey){
+        //       history.redo();
+        //     break;
+        //   }
+        // }
         case "Delete":{  
           deleteLayers();
           break;
@@ -435,12 +435,14 @@ export const Canvas = ({
         redo={history.redo}
         canUndo={canUndo}
         canRedo={canRedo}
+        boardId={boardId}
       />
       <SelectionTools 
         camera={camera}
         setLastUsedColor={setLastUsedColor}
       />
       <svg
+        id="mySvg"
         className="h-[100vh] w-[100vw] "
         onWheel={onWheel}
         onPointerMove={onPointerMove}

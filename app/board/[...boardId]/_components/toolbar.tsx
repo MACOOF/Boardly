@@ -1,6 +1,12 @@
+"use client"
 import { Circle, MousePointer2, Pencil, Redo2, Square, StickyNote, Type, Undo2 } from "lucide-react"
 import { ToolButton } from "./tool-button"
 import { CanvasMode, CanvasState, LayerType } from "@/types/canvas";
+import SvgDownloader from "./svg-download-button";
+import { useQuery } from "convex/react";
+import { api } from "@/convex/_generated/api";
+import { Id } from "@/convex/_generated/dataModel";
+import SvgDownloaderWithFontToPaths from "./SvgDownloaderWithFontToPaths";
 
 
 interface ToolbarProps {
@@ -10,6 +16,7 @@ interface ToolbarProps {
   redo:()=>void
   canUndo:boolean;
   canRedo:boolean;
+  boardId:string
 };
 
 export const Toolbar = ({
@@ -18,8 +25,11 @@ export const Toolbar = ({
   undo,
   redo,
   canRedo,
-  canUndo
+  canUndo,
+  boardId
 }:ToolbarProps) => {
+
+  const data = useQuery(api.board.get,{id:boardId as Id<"boards">});
   return (
     <div className="absolute top-1/2 -translate-y-1/2 left-2 flex
     flex-col gap-y-4">
@@ -95,6 +105,16 @@ export const Toolbar = ({
             canvasState.mode === CanvasMode.Pencil
           }
         />
+        <SvgDownloader 
+          svgId="mySvg" 
+          fileName={`${data?.title}.svg`} 
+          buttonText="Download SVG Image" 
+        />
+        {/* <SvgDownloaderWithFontToPaths 
+          svgId="mySvg" 
+          fileName="svg-with-font-info.svg" 
+          buttonText="Download with Enhanced Font Handling" 
+        /> */}
       </div>
       <div className="bg-white rounded-md p-1.5 flex flex-col
       items-center shadow-md">

@@ -46,11 +46,12 @@ export const Info = ({
             <Image
               src="/logo.svg"
               alt="Logo"
-              height={40}
-              width={40}
+              height={30}
+              width={30}
+              className="mt-1"
               />
             <span className={cn(
-              "text-black font-semibold text-xl ml-2",
+              "text-black font-semibold text-xl",
               font.className
             )}>
               Boardly
